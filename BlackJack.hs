@@ -1,20 +1,21 @@
 -- Black Jack Game
 
 
+
 -- Game Entity Declaration
+
 -- The suit of a card
 data Suit = Hearts | Spades | Diamonds | Clubs
   deriving (Eq, Show)
 
--- The rank of a card
-data Rank = Ace | Num Int | Jack | Queen | King
+data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
   deriving (Eq, Show)
 
 -- A card has a rank and a suit
 data Card = Card Rank Suit
   deriving (Eq, Show)
 
--- A hand is a list of cards.
+-- A hand is a list of cards
 type Hand = [Card]
 
 -- The possible players
@@ -25,6 +26,7 @@ data Player = Bank | Guest
 
 
 -- Game Functionality
+
 -- 1. faceCards
 faceCards :: Hand -> Integer
 faceCards [] = 0
@@ -33,14 +35,23 @@ faceCards (Card rank _ : xs)
     | otherwise = faceCards xs
 
 
-
+-- We gotta make tis better on gawd
+-- If anyone wanna work on tis function go for it, it works but too long, tested til nr 4 and they work, havent tested the rest.
 -- 2. value
 value :: Hand -> Integer
 value [] = 0
 value (Card Ace _ : xs)
     | 11 + value xs > 21 = 1 + value xs
     | otherwise = 11 + value xs
-value (Card (Num n) _ : xs) = fromIntegral n + value xs
+value (Card Two _ : xs) = 2 + value xs
+value (Card Three _ : xs) = 3 + value xs
+value (Card Four _ : xs) = 4 + value xs
+value (Card Five _ : xs) = 5 + value xs
+value (Card Six _ : xs) = 6 + value xs
+value (Card Seven _ : xs) = 7 + value xs
+value (Card Eight _ : xs) = 8 + value xs
+value (Card Nine _ : xs) = 9 + value xs
+value (Card Ten _ : xs) = 10 + value xs
 value (Card rank _ : xs)
     | rank == Jack || rank == Queen || rank == King = 10 + value xs
 
@@ -78,8 +89,7 @@ winner guest bank
 
 -- 7. handSuit
 handSuit :: Suit -> Hand
-handSuit suit =
-  [ Card Ace suit, Card (Num 2) suit, Card (Num 3) suit, Card (Num 4) suit, Card (Num 5) suit, Card (Num 6) suit, Card (Num 7) suit, Card (Num 8) suit, Card (Num 9) suit, Card (Num 10) suit, Card Jack suit, Card Queen suit, Card King suit]
+handSuit suit = [ Card Ace suit , Card Two suit, Card Three suit, Card Four suit, Card Five suit, Card Six suit, Card Seven suit, Card Eight suit, Card Nine suit, Card Ten suit, Card Jack suit, Card Queen suit, Card King suit]
 
 
 

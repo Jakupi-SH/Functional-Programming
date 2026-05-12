@@ -2,7 +2,7 @@
 
 -- Problem List
 -- Currently the Ace transormation into a 1 if the total value is more than 21 only works if the Ace is in the first position, or if there are more than 2 cards and all are aces. Not sure if we can use helpers yet (would probably be able to fix with them), and we cannot use imports or lists. This causes problems on all functions that use values of a Hand.
-
+-- The value function also looks quite redundant as it repeats assigning a value for each rank individualy.
 
 
 -- Game Entity Declaration

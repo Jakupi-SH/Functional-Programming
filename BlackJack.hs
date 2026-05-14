@@ -22,7 +22,7 @@ data Player = Bank | Guest
 
 -- Helper Functions
 
-rankValue :: Rank -> Integer
+rankValue :: Rank -> Integer -- Translates the Rank of a card into its Integer value
 rankValue Ace   = 1
 rankValue Two   = 2
 rankValue Three = 3
@@ -38,19 +38,19 @@ rankValue Queen = 10
 rankValue King  = 10
 
 
-countAces :: Hand -> Integer
+countAces :: Hand -> Integer -- Counts the number of Aces in a Hand, which is important for calculating the value of a hand since Aces can be worth either 1 or 11
 countAces [] = 0
 countAces (Card Ace _ : xs) = 1 + countAces xs
 countAces (_ : xs) = countAces xs
 
 
-baseValue :: Hand -> Integer
+baseValue :: Hand -> Integer -- Calculates the base value of a Hand by summing the rank values of all cards, treating Aces as 1
 baseValue [] = 0
 baseValue (Card rank _ : xs) =
   rankValue rank + baseValue xs
 
 
-upgradeAces :: Integer -> Integer -> Integer
+upgradeAces :: Integer -> Integer -> Integer -- Upgrades the value of Aces from 1 to 11 as long as it does not cause the hand value to exceed 21
 upgradeAces total 0 = total
 upgradeAces total aces
   | total + 10 <= 21 = upgradeAces (total + 10) (aces - 1)
@@ -120,7 +120,7 @@ fullDeck =
   handSuit Hearts
   <+ handSuit Spades
   <+ handSuit Diamonds
-  <+ handSuit Clubs -- Returns all cards in a standard deck of BlackJack
+  <+ handSuit Clubs -- Returns all cards in a standard deck
 
 
 -- 10. draw

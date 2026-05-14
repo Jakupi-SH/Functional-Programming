@@ -1,9 +1,5 @@
 -- Black Jack Game
 
--- Problem List
--- Currently the Ace transormation into a 1 if the total value is more than 21 only works if the Ace is in the first position, or if there are more than 2 cards and all are aces. Not sure if we can use helpers yet (would probably be able to fix with them), and we cannot use imports or lists. This causes problems on all functions that use values of a Hand.
--- The value function also looks quite redundant as it repeats assigning a value for each rank individualy.
-
 
 -- Game Entity Declaration
 
@@ -24,6 +20,44 @@ data Player = Bank | Guest
 
 
 
+-- Helper Functions
+
+rankValue :: Rank -> Integer
+rankValue Ace   = 1
+rankValue Two   = 2
+rankValue Three = 3
+rankValue Four  = 4
+rankValue Five  = 5
+rankValue Six   = 6
+rankValue Seven = 7
+rankValue Eight = 8
+rankValue Nine  = 9
+rankValue Ten   = 10
+rankValue Jack  = 10
+rankValue Queen = 10
+rankValue King  = 10
+
+
+countAces :: Hand -> Integer
+countAces [] = 0
+countAces (Card Ace _ : xs) = 1 + countAces xs
+countAces (_ : xs) = countAces xs
+
+
+baseValue :: Hand -> Integer
+baseValue [] = 0
+baseValue (Card rank _ : xs) =
+  rankValue rank + baseValue xs
+
+
+upgradeAces :: Integer -> Integer -> Integer
+upgradeAces total 0 = total
+upgradeAces total aces
+  | total + 10 <= 21 = upgradeAces (total + 10) (aces - 1)
+  | otherwise        = total
+
+
+
 
 -- Game Functionality
 
@@ -31,40 +65,24 @@ data Player = Bank | Guest
 faceCards :: Hand -> Integer
 faceCards [] = 0
 faceCards (Card rank _ : xs)
-    | rank == Jack || rank == Queen || rank == King = 1 + faceCards xs -- Checks if a card is a face card then returns the number of times they appear 
-    | otherwise = faceCards xs
+  | rank == Jack || rank == Queen || rank == King = 1 + faceCards xs -- Checks if a card is a face card then returns the number of times they apfupear 
+  | otherwise = faceCards xs
 
 
 -- 2. value
 value :: Hand -> Integer
-value [] = 0
-value (Card Ace _ : xs)
-    | 11 + rest > 21 = 1  + rest
-    | otherwise      = 11 + rest -- Checks whether an Ace raises the Hand value over 21, if yes, Ace = 1
-    where rest = value xs
-value (Card Two _ : xs)   = 2  + value xs -- Each Rank Type is given a value they should add to the current value of the Hand
-value (Card Three _ : xs) = 3  + value xs
-value (Card Four _ : xs)  = 4  + value xs
-value (Card Five _ : xs)  = 5  + value xs
-value (Card Six _ : xs)   = 6  + value xs
-value (Card Seven _ : xs) = 7  + value xs
-value (Card Eight _ : xs) = 8  + value xs
-value (Card Nine _ : xs)  = 9  + value xs
-value (Card Ten _ : xs)   = 10 + value xs
-value (Card Jack _ : xs)  = 10 + value xs
-value (Card Queen _ : xs) = 10 + value xs
-value (Card King _ : xs)  = 10 + value xs
+value hand =
+  upgradeAces (baseValue hand) (countAces hand)
 
 
 -- 3. isBlackjack
 isBlackjack :: Hand -> Bool
-isBlackjack [a,b] = value [a,b] == 21 -- Checks if a hand of two cards is equal to 21 (an ace and a rank value of 10)
-isBlackjack _ = False
+isBlackjack hand = length hand == 2 && value hand == 21 -- Checks if a hand of two cards is equal to 21 (an ace and a rank value of 10)
 
 
 -- 4. gameOver
 gameOver :: Hand -> Bool
-gameOver hand = value hand > 21 -- Checks if the Hand value surpasses 21
+gameOver = (>21) . value -- Checks if the Hand value surpasses 21
 
 
 -- 5. winner

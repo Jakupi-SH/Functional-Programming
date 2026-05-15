@@ -32,6 +32,9 @@ updateCell pos value ((p,v):xs)
     | otherwise = (p,v) : updateCell pos value xs
 
 
+--the map keyword ensures that a function is applied to every value which is given to it
+-- the .second function ensures that function "f" affects only the second values
+-- in the spreadsheet pair.
 mapSpreadsheet :: (CellValue -> CellValue) -> Spreadsheet -> Spreadsheet
 mapSpreadsheet f =
     map (Data.Bifunctor.second f)
@@ -45,9 +48,7 @@ countCellsBy :: (Double -> Bool) -> Spreadsheet -> Int
 countCellsBy predicate sheet =
     length (filterCellsByValue predicate sheet)
 
--- =========================
--- 6. sumRange
--- =========================
+
 
 sumRange :: Position -> Position -> Spreadsheet -> Double
 sumRange (r1,c1) (r2,c2) sheet =
@@ -57,9 +58,6 @@ sumRange (r1,c1) (r2,c2) sheet =
         , c <- [c1..c2]
         ]
 
--- =========================
--- 7. mapRange
--- =========================
 
 mapRange :: (Double -> Double)
          -> Position
@@ -80,9 +78,6 @@ mapRange f (r1,c1) (r2,c2) sheet =
         r >= r1 && r <= r2 &&
         c >= c1 && c <= c2
 
--- =========================
--- 8. sortCellsByValue
--- =========================
 
 sortCellsByValue :: Spreadsheet -> Spreadsheet
 sortCellsByValue sheet =
@@ -90,17 +85,14 @@ sortCellsByValue sheet =
         (comparing (\(_,val) -> cellToDouble val sheet))
         sheet
 
--- =========================
--- HELPER FUNCTION
--- =========================
+
+-- Helper functions =======================
 
 cellToDouble :: CellValue -> Spreadsheet -> Double
 cellToDouble (Number n) _     = n
 cellToDouble (Formula f) s    = f s
 cellToDouble (Reference r) s  = evalCell (referenceToPosition r) s
 
-
--- "AA1" -> (1,27)
 
 referenceToPosition :: String -> Position
 referenceToPosition str =
@@ -112,20 +104,23 @@ referenceToPosition str =
     row = read digits
     column = lettersToNumber letters
 
--- (1,27) -> "AA1"
 
 positionToReference :: Position -> String
 positionToReference (row,col) =
     numberToLetters col ++ show row
 
--- =========================
--- COLUMN CONVERSION
--- =========================
 
+
+--this functions was made with the help of the foldl in order to accumulate the letters into a number
+--it also utilizes ord to turn characters into ASCII numbers
+--proper calculation is made afterwards
+-- "AA1" -> (1,27)
 lettersToNumber :: String -> Int
 lettersToNumber =
     foldl (\acc ch -> acc * 26 + (ord ch - ord 'A' + 1)) 0
 
+--utilizes recursion in case the integer is bigger than 26,
+--making the reference a string with two characters like "AA = 27"
 numberToLetters :: Int -> String
 numberToLetters n
     | n <= 0    = ""
@@ -133,9 +128,9 @@ numberToLetters n
         numberToLetters ((n - 1) `div` 26)
         ++ [chr (ord 'A' + ((n - 1) `mod` 26))]
 
--- =========================
--- TEST DATA
--- =========================
+
+
+-- spreadsheet data for testing the functions
 
 sheet :: Spreadsheet
 sheet =
@@ -150,6 +145,8 @@ sheet =
     , ((2,2), Reference "A1")
     ]
 
+
+-- This is a list of the ways the functions were tested in the terminal
 
 -- evalCell (1,1) sheet
 -- 10.0

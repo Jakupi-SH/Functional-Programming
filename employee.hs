@@ -18,7 +18,6 @@ leftOn :: Maybe Date
 data Date = Date Int Int Int
     deriving (Show, Eq, Ord)
 
--- Exercise 1
 d1 = Date 2025 1 1
 d2 = Date 2025 6 1
 d3 = Date 2025 3 1
@@ -32,6 +31,15 @@ p3 = Permit "P3" d5
 e1 = Emp "E1" d1 (Just p1) Nothing
 e2 = Emp "E2" d3 (Just p2) Nothing
 e3 = Emp "E3" d5 (Just p3) Nothing
+e4 = Emp "E4" d1 (Just p1) (Just (Date 2028 1 1))
+e5 = Emp "E5" d3 (Just p2) (Just (Date 2028 1 1))
+e6 = Emp "E6" d1 (Just p3) (Just (Date 2030 1 1))
+
+-- Exercise 1
+-- Example prompt: 
+-- employeesWithOverlappingPermits[e1,e2,e3]
+-- [("E1","E2")]
+
 
 permitsOverlap :: Employee -> Employee -> Bool
 permitsOverlap e1 e2 =
@@ -56,6 +64,9 @@ overlappingPairs e1 (e2:xs)
         overlappingPairs e1 xs
 
 -- Exercise 2
+-- Example Prompt: 
+-- [(3,[Emp {empId = "E4", joinedOn = Date 2025 1 1, permit = Just (Permit {number = "P1", expiryDate = Date 2025 6 1}), leftOn = Just (Date 2028 1 1)},Emp {empId = "E5", joinedOn = Date 2025 3 1, permit = Just (Permit {number = "P2", expiryDate = Date 2025 12 1}), leftOn = Just (Date 2028 1 1)}]),(5,[Emp {empId = "E6", joinedOn = Date 2025 1 1, permit = Just (Permit {number = "P3", expiryDate = Date 2026 1 1}), leftOn = Just (Date 2030 1 1)}])]
+
 
 tenure :: Employee -> Int
 tenure e =
@@ -67,7 +78,8 @@ tenure e =
         Nothing ->
             0
 
--- It returns employees grouped by their tenure year, the employee object includes all of their attributes i.e ,[Emp {empId = "E4", joinedOn = Date 2025 1 1, permit = Just (Permit {number = "P1", expiryDate = Date 2025 6 1}), leftOn = Just (Date 2028 1 1)}
+-- It returns employees grouped by their tenure year, the employee object includes all of their attributes. 
+
 employeesByTenure :: [Employee] -> [(Int, [Employee])]
 employeesByTenure [] = []
 
@@ -95,12 +107,13 @@ removeSameTenure e (x:xs)
         x : removeSameTenure e xs
 
 
-e4 = Emp "E4" d1 (Just p1) (Just (Date 2028 1 1))
-e5 = Emp "E5" d3 (Just p2) (Just (Date 2028 1 1))
-e6 = Emp "E6" d1 (Just p3) (Just (Date 2030 1 1))
 
 
 -- Exercise 3
+-- Example prompt:
+-- longestWorkingEmployee[e1,e2,e3,e4,e5,e6]
+-- Just (Emp {empId = "E6", joinedOn = Date 2025 1 1, permit = Just (Permit {number = "P3", expiryDate = Date 2026 1 1}), leftOn = Just (Date 2030 1 1)})
+
 
 longestWorkingEmployee :: [Employee] -> Maybe Employee
 longestWorkingEmployee [] = Nothing
@@ -117,6 +130,10 @@ longestHelper current (x:xs)
 
 
 -- Exercise 4
+-- Example prompt:
+-- withExpiredPermit[e1,e2,e3,e4,e5,e6] today
+-- ["E1","E2","E4","E5"]
+
 
 isExpired :: Employee -> Date -> Bool
 isExpired e today =
@@ -124,6 +141,8 @@ isExpired e today =
         Just p  -> expiryDate p < today
         Nothing -> False
 
+today = Date 2025 12 2 
+--example date to show which employees have expired permits
 
 withExpiredPermit :: [Employee] -> Date -> [EId]
 withExpiredPermit [] _ = []
@@ -132,6 +151,9 @@ withExpiredPermit (x:xs) today
     | otherwise         = withExpiredPermit xs today
 
 -- Exercise 5
+-- Example prompt:
+-- avgYearsWorked[e1,e2,e3,e4,e5,e6]
+-- 3.6666666666666665
 
 hasLeft :: Employee -> Bool
 hasLeft e =

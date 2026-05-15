@@ -93,7 +93,9 @@ cellToDouble (Number n) _     = n
 cellToDouble (Formula f) s    = f s
 cellToDouble (Reference r) s  = evalCell (referenceToPosition r) s
 
-
+--takewhile takes the values from the list as long as they are letters/ digits, 
+--depending on the part of the function
+--uses dropwhile which drops the letters in the list which is meant for digits
 referenceToPosition :: String -> Position
 referenceToPosition str =
     (row, column)
